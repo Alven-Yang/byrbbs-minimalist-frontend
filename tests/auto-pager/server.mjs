@@ -33,7 +33,11 @@ function content(url) {
   }).join('');
   const pinned = '<tr class="top"><td class="title_9"><a href="/article/A/9000">Pinned</a></td><td>2026</td><td>demo</td><td>0</td></tr>';
   const body = article ? floors : `<table class="board-list"><thead><tr><th class="title_9">Topic</th><th class="title_10">Date</th><th class="title_12">Author</th><th class="title_11">Replies</th></tr></thead><tbody>${pinned}${rows}</tbody></table>`;
-  return `<style>#body .board-list td{height:60px}</style><div class="t-pre">${article ? pagination : ''}</div><div class="b-head"><span class="n-left">${article ? 'Article' : 'Board'}</span>${article ? `<a id="a_share" _u="${url.pathname}">Share</a>` : ''}</div><div class="b-content">${body}</div><div class="t-pre-bottom">${pagination}</div><script>window.pagerInjected = true;</script>`;
+  const reply = article && url.searchParams.get('case') === 'gallery';
+  const replyLink = reply ? '<a id="a_reply" href="#">快捷回复</a>' : '';
+  const composer = reply ? '<div class="a-comment"><form id="quick_post"><div class="a-comment-txt"><textarea rows="3"></textarea></div>' +
+    '<div class="a-comment-btn"><input class="button" type="submit" value="快捷回复"></div></form></div>' : '';
+  return `<style>#body .board-list td{height:60px}</style><div class="t-pre">${article ? pagination : ''}${replyLink}</div><div class="b-head"><span class="n-left">${article ? 'Article' : 'Board'}</span>${article ? `<a id="a_share" _u="${url.pathname}">Share</a>` : ''}</div><div class="b-content">${body}</div><div class="t-pre-bottom">${pagination}</div>${composer}<script>window.pagerInjected = true;</script>`;
 }
 function gbk(html) {
   const parts = html.split('测试中文');

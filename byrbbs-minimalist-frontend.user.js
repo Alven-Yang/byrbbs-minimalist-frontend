@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         北邮人论坛 · 简约版
 // @namespace    https://bbs.byr.cn/
-// @version      0.8.2
+// @version      0.8.3
 // @description  为北邮人论坛首页、分区目录、帖子列表与详情页提供响应式简约布局，支持固定分区侧栏、深色模式、返回位置恢复与自动无缝翻页。
 // @author       Hermi2024
 // @match        https://bbs.byr.cn/*
@@ -32,6 +32,7 @@
   const STORAGE_KEY = 'bym-enabled';
   const THEME_KEY = 'bym-theme';
   const PAGER_KEY = 'bym-auto-pager';
+  const REPLY_KEY = 'bym-reply-open';
   const TOGGLE_KEY = 'm'; // Alt+M 切换
   const LOADING_TIMEOUT = 3000;
   const PAGER_THRESHOLD = 1200;
@@ -48,7 +49,16 @@
     enabled: readEnabled(),
     theme: readTheme(), // 'auto' | 'light' | 'dark'
     autoPager: readAutoPager(),
+    replyOpen: readReplyOpen(),
   };
+
+  function readReplyOpen() {
+    try {
+      return localStorage.getItem(REPLY_KEY) === '1';
+    } catch (e) {
+      return false;
+    }
+  }
 
   function readEnabled() {
     try {
@@ -517,6 +527,7 @@
     body.classList.toggle('bym-on', articleActive);
     body.classList.toggle('bym-browse-on', active && ready && !!browse);
     body.classList.toggle('bym-active', active);
+    syncReplyDock();
     if (!articleActive) {
       restoreComposer();
       closeLightbox();
@@ -2143,6 +2154,7 @@ body.bym-on .a-nice-comment-floor {
 
   const CSS_COMPOSER = String.raw`
 /* ---------- 快捷回复：固定在底部，压缩成一行 ---------- */
+body.bym-on:not(.bym-reply-open) .a-comment { display: none !important; }
 body.bym-on .a-comment {
   position: fixed !important;
   left: var(--bym-content-left) !important;
@@ -2458,7 +2470,7 @@ body.bym-on .ubb-img-tab li[_cur="1"] div { color: #fff !important; }
 #bym-dock {
   position: fixed;
   left: var(--bym-content-left, 14px);
-  bottom: 14px;
+  bottom: var(--bym-dock-bottom, 14px);
   z-index: 2147483000;
   display: none;
   align-items: center;
@@ -2467,7 +2479,8 @@ body.bym-on .ubb-img-tab li[_cur="1"] div { color: #fff !important; }
   flex-wrap: wrap;
 }
 body.bym-supported #bym-dock { display: flex; }
-#bym-pager[hidden] { display: none !important; }
+#bym-pager[hidden], #bym-reply[hidden] { display: none !important; }
+#bym-dock #bym-reply { opacity: 1; }
 #bym-dock button {
   display: inline-flex;
   align-items: center;
@@ -2529,6 +2542,16 @@ body.bym-supported.bym-menu-open #bym-dock {
 /* ==================================================================
    0.4.0：浮动标题 / 路径栏 + 底部工具栏与快捷回复
    ================================================================== */
+body.bym-on {
+  --bym-reading-top: 58px;
+  --bym-composer-space: 0px;
+  --bym-toolbar-space: 0px;
+  --bym-dock-bottom: calc(14px + var(--bym-composer-space) + var(--bym-toolbar-space));
+  --bym-reading-bottom: calc(var(--bym-dock-bottom) + var(--bym-dock-h, 32px) + 8px);
+}
+body.bym-on.bym-reply-open {
+  --bym-composer-space: calc(var(--bym-composer-h, 54px) + 8px);
+}
 /* 读文章时，滚动超过标题后出现的浮动栏：向下滚显示标题，向上滚显示路径 */
 #bym-floatbar {
   display: none;
@@ -2614,7 +2637,7 @@ body.bym-on #bym-floatbar { display: block; }
 #bym-floor-top {
   position: fixed;
   right: 14px;
-  bottom: calc(var(--bym-composer-h, 54px) + var(--bym-toolbar-h, 40px) + 30px);
+  bottom: var(--bym-dock-bottom, 14px);
   z-index: 2147483000;
   display: inline-flex;
   align-items: center;
@@ -2654,9 +2677,12 @@ body.bym-on #bym-floatbar { display: block; }
   border-color: var(--bym-accent);
 }
 
-/* 桌面端：底部工具栏吸底，快捷回复只占一行 */
+/* 桌面端只在回复展开时吸底，阅读时工具栏留在帖子末尾。 */
 @media (min-width: 1100px) {
-  body.bym-on #body > .t-pre-bottom {
+  body.bym-on.bym-reply-open {
+    --bym-toolbar-space: calc(var(--bym-toolbar-h, 40px) + 12px);
+  }
+  body.bym-on.bym-reply-open:not(.bym-bottom-flow) #body > .t-pre-bottom {
     position: fixed !important;
     left: var(--bym-content-left) !important;
     bottom: calc(var(--bym-composer-h, 54px) + 18px) !important;
@@ -2666,7 +2692,7 @@ body.bym-on #bym-floatbar { display: block; }
     margin: 0 !important;
     padding: 5px 10px !important;
   }
-  /* 滚到页面末尾后，工具栏回到最后一张卡片之后，不再悬浮遮挡 */
+  body.bym-on:not(.bym-reply-open) #body > .t-pre-bottom,
   body.bym-on.bym-bottom-flow #body > .t-pre-bottom {
     position: static !important;
     left: auto !important;
@@ -2676,20 +2702,13 @@ body.bym-on #bym-floatbar { display: block; }
     margin: 10px 0 0 !important;
     z-index: auto;
   }
-  body.bym-on #bym-dock { bottom: calc(var(--bym-composer-h, 54px) + var(--bym-toolbar-h, 40px) + 30px); }
 }
 
 /* 底部浮层会遮住末尾内容，给页面和页脚留出空间 */
-body.bym-on #main { padding-bottom: calc(var(--bym-composer-h, 54px) + 38px) !important; }
-body.bym-on #bot_foot { margin-bottom: calc(var(--bym-composer-h, 54px) + 42px) !important; }
-@media (min-width: 1100px) {
-  body.bym-on #main { padding-bottom: calc(var(--bym-composer-h, 54px) + var(--bym-toolbar-h, 40px) + var(--bym-dock-h, 32px) + 38px) !important; }
-  body.bym-on #bot_foot { margin-bottom: calc(var(--bym-composer-h, 54px) + var(--bym-toolbar-h, 40px) + var(--bym-dock-h, 32px) + 48px) !important; }
-}
+body.bym-on #main { padding-bottom: var(--bym-reading-bottom) !important; }
+body.bym-on #bot_foot { margin-bottom: calc(var(--bym-reading-bottom) + 12px) !important; }
 @media (max-width: 1099px) {
-  body.bym-on #main { padding-bottom: calc(var(--bym-composer-h, 54px) + var(--bym-dock-h, 32px) + 38px) !important; }
-  body.bym-on #bot_foot { margin-bottom: calc(var(--bym-composer-h, 54px) + 42px) !important; }
-  body.bym-on #bym-dock { bottom: calc(var(--bym-composer-h, 54px) + 22px); }
+  body.bym-on { --bym-reading-top: 52px; }
   body.bym-on .a-comment { bottom: 8px !important; }
   #bym-floatbar {
     top: 6px;
@@ -2697,7 +2716,6 @@ body.bym-on #bot_foot { margin-bottom: calc(var(--bym-composer-h, 54px) + 42px) 
   }
   #bym-floor-top {
     right: 10px;
-    bottom: calc(var(--bym-composer-h, 54px) + 22px);
   }
 }
 
@@ -3741,6 +3759,8 @@ body.bym-on .bym-gallery {
   margin: 8px 0 12px;
   --bym-gallery-surface: #eef2f7;
   --bym-gallery-selected: #2165ce;
+  --bym-gallery-thumb-width: clamp(46px, 8vw, 64px);
+  --bym-gallery-strip-space: calc(var(--bym-gallery-thumb-width) / 1.2 + 20px);
 }
 html.bym-dark body.bym-on .bym-gallery {
   --bym-gallery-surface: #10161f;
@@ -3748,7 +3768,8 @@ html.bym-dark body.bym-on .bym-gallery {
 }
 body.bym-on .bym-gallery-stage {
   position: relative;
-  height: clamp(180px, 49vh, 430px);
+  box-sizing: border-box;
+  height: max(120px, calc(100dvh - var(--bym-reading-top) - var(--bym-reading-bottom) - var(--bym-gallery-strip-space)));
   overflow: hidden;
   border: 1px solid var(--bym-border);
   border-radius: 12px;
@@ -3773,7 +3794,13 @@ body.bym-on .bym-gallery .bym-gallery-open {
   border: 0;
   background: transparent;
   cursor: zoom-in;
+  user-select: none;
 }
+body.bym-on .bym-gallery .bym-gallery-open[aria-pressed="true"] {
+  cursor: grab;
+  touch-action: none;
+}
+body.bym-on .bym-gallery .bym-gallery-open.bym-gallery-dragging { cursor: grabbing; }
 body.bym-on .bym-gallery .bym-gallery-open img,
 body.bym-on .bym-gallery .bym-gallery-thumb img {
   display: block;
@@ -3830,7 +3857,7 @@ body.bym-on .bym-gallery-thumbs {
   scrollbar-width: thin;
 }
 body.bym-on .bym-gallery .bym-gallery-thumb {
-  flex: 0 0 clamp(46px, 8vw, 64px);
+  flex: 0 0 var(--bym-gallery-thumb-width);
   aspect-ratio: 1.2;
   min-width: 0;
   overflow: hidden;
@@ -3846,7 +3873,6 @@ body.bym-on .bym-gallery .bym-gallery-thumb[aria-current="true"] {
   border-color: var(--bym-gallery-selected);
 }
 @media (max-width: 560px) {
-  body.bym-on .bym-gallery-stage { height: clamp(152px, 41vh, 320px); }
   body.bym-on .bym-gallery-prev { left: 6px; }
   body.bym-on .bym-gallery-next { right: 6px; }
 }
@@ -4036,7 +4062,7 @@ html.bym-lightbox-lock { overflow: hidden !important; }
     if (document.getElementById('bym-style')) return;
     const el = document.createElement('style');
     el.id = 'bym-style';
-    el.dataset.version = '0.8.2';
+    el.dataset.version = '0.8.3';
     el.textContent = CSS + BROWSE_CSS;
     (document.head || document.documentElement).appendChild(el);
   }
@@ -4049,6 +4075,7 @@ html.bym-lightbox-lock { overflow: hidden !important; }
   let themeBtn = null;
   let menuBtn = null;
   let pagerButton = null;
+  let replyButton = null;
   let overlay = null;
 
   function syncToggle() {
@@ -4120,6 +4147,43 @@ html.bym-lightbox-lock { overflow: hidden !important; }
     syncMenu();
   }
 
+  function syncReplyDock() {
+    const form = isModern() ? document.querySelector('#body #quick_post') : null;
+    const open = !!form && state.replyOpen;
+    document.body.classList.toggle('bym-reply-open', open);
+    if (replyButton) {
+      replyButton.hidden = !form;
+      replyButton.setAttribute('aria-expanded', String(open));
+      const text = open ? '收起回复' : '快捷回复';
+      if (replyButton.textContent !== text) replyButton.textContent = text;
+    }
+    return form;
+  }
+
+  function setReplyOpen(open) {
+    state.replyOpen = open;
+    try {
+      localStorage.setItem(REPLY_KEY, open ? '1' : '0');
+    } catch (e) { /* ignore */ }
+    const form = syncReplyDock();
+    if (open) {
+      resizeComposer();
+      form?.querySelector('textarea')?.focus({ preventScroll: true });
+    } else {
+      closeEmojiPanel(form?.closest('.a-comment'));
+      updateBottomBarFlow();
+    }
+    articleGalleries.forEach(clampGalleryPan);
+  }
+
+  function onQuickReplyClick(event) {
+    if (!isModern() || !event.target.closest?.('#a_reply') || !document.querySelector('#body #quick_post')) return;
+    if (event.button !== 0 || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+    event.preventDefault();
+    event.stopPropagation();
+    setReplyOpen(true);
+  }
+
   function mountDock() {
     if (dock || !document.body) return;
 
@@ -4155,7 +4219,13 @@ html.bym-lightbox-lock { overflow: hidden !important; }
     pagerButton.setAttribute('aria-pressed', 'true');
     pagerButton.addEventListener('click', toggleAutoPager);
 
-    dock.append(menuBtn, toggleBtn, themeBtn, pagerButton);
+    replyButton = document.createElement('button');
+    replyButton.id = 'bym-reply';
+    replyButton.type = 'button';
+    replyButton.setAttribute('aria-controls', 'quick_post');
+    replyButton.addEventListener('click', () => setReplyOpen(!state.replyOpen));
+
+    dock.append(menuBtn, toggleBtn, themeBtn, pagerButton, replyButton);
 
     overlay = document.createElement('div');
     overlay.id = 'bym-overlay';
@@ -4166,6 +4236,7 @@ html.bym-lightbox-lock { overflow: hidden !important; }
     syncTheme();
     syncMenu();
     syncPagerButton();
+    syncReplyDock();
   }
 
   function onKeydown(e) {
@@ -6061,13 +6132,13 @@ html.bym-lightbox-lock { overflow: hidden !important; }
     });
   }
 
-  // 底部工具栏：默认悬浮；滚到页面末尾时回到最后一张卡片之后
+  // 展开回复时，底部工具栏在桌面悬浮，滚到末尾时回到最后一张卡片之后。
   function updateBottomBarFlow() {
     if (!document.body) return;
     const bar = document.querySelector('#body > .t-pre-bottom');
     const wraps = document.querySelectorAll('#body .a-wrap');
     let flow = false;
-    if (isModern() && bar && wraps.length) {
+    if (isModern() && state.replyOpen && bar && wraps.length) {
       const last = wraps[wraps.length - 1];
       const composerH =
         parseFloat(
@@ -6089,6 +6160,7 @@ html.bym-lightbox-lock { overflow: hidden !important; }
         document.documentElement.style.setProperty(property, height + 'px');
       }
     });
+    articleGalleries.forEach(clampGalleryPan);
   }) : null;
 
   // 工具栏分页、按钮和控制条换行后，用实际高度给其他浮层及正文留位。
@@ -6138,8 +6210,7 @@ html.bym-lightbox-lock { overflow: hidden !important; }
   }
 
   function resizeComposer() {
-    // 切回经典版后不再接管输入框尺寸
-    if (!isModern()) return;
+    if (!isModern() || !state.replyOpen) return;
     const comment = document.querySelector('.a-comment');
     const ta = comment && comment.querySelector('.a-comment-txt textarea');
     if (!comment || !ta) return;
@@ -6235,8 +6306,9 @@ html.bym-lightbox-lock { overflow: hidden !important; }
     closeEmojiPanel(comment);
   }
 
-  /* 正文和每条精彩回复分别组织图片，画廊和灯箱使用同一组原始节点。 */
+  /* 正文和每条精彩回复分别组织图片。 */
   const articleGalleries = new Map();
+  const IMAGE_ZOOM = 2.2;
 
   function isGalleryGap(node) {
     return node.nodeName === 'BR' || node.nodeType === Node.COMMENT_NODE ||
@@ -6279,6 +6351,83 @@ html.bym-lightbox-lock { overflow: hidden !important; }
     articleGalleries.delete(group);
   }
 
+  function moveGalleryImage(gallery, x, y) {
+    const { preview } = gallery;
+    const { clientWidth, clientHeight, naturalWidth, naturalHeight } = preview;
+    if (!clientWidth || !clientHeight || !naturalWidth || !naturalHeight) return;
+    const fit = Math.min(clientWidth / naturalWidth, clientHeight / naturalHeight);
+    const limitX = Math.max(0, (naturalWidth * fit * IMAGE_ZOOM - clientWidth) / 2);
+    const limitY = Math.max(0, (naturalHeight * fit * IMAGE_ZOOM - clientHeight) / 2);
+    gallery.panX = Math.max(-limitX, Math.min(limitX, x));
+    gallery.panY = Math.max(-limitY, Math.min(limitY, y));
+    preview.style.transform = `translate(${gallery.panX}px, ${gallery.panY}px) scale(${IMAGE_ZOOM})`;
+  }
+
+  function clampGalleryPan(gallery) {
+    if (gallery.zoomed) moveGalleryImage(gallery, gallery.panX, gallery.panY);
+  }
+
+  function setGalleryZoom(gallery, zoomed, x = 0, y = 0) {
+    gallery.zoomed = zoomed;
+    gallery.zoomButton.setAttribute('aria-pressed', String(zoomed));
+    gallery.zoomButton.title = zoomed ? '拖动查看，点击还原' : '点击放大图片';
+    if (zoomed) {
+      moveGalleryImage(gallery, x, y);
+    } else {
+      gallery.panX = 0;
+      gallery.panY = 0;
+      gallery.preview.style.removeProperty('transform');
+    }
+  }
+
+  function revealGallery(gallery) {
+    const rect = gallery.element.getBoundingClientRect();
+    const top = parseFloat(getComputedStyle(gallery.element).getPropertyValue('--bym-reading-top'));
+    const bottom = (dock?.offsetHeight ? dock.getBoundingClientRect().top : innerHeight) - 8;
+    const target = Math.max(top, Math.min(rect.top, bottom - rect.height));
+    // 只有上下工具栏挡住画廊时才微调滚动位置。
+    if (Math.abs(rect.top - target) > 1) window.scrollBy({ top: rect.top - target, behavior: 'instant' });
+  }
+
+  function bindGalleryZoom(gallery) {
+    const { zoomButton } = gallery;
+    let drag = null;
+    let moved = false;
+    zoomButton.addEventListener('pointerdown', (event) => {
+      if (!event.isPrimary || event.button !== 0) return;
+      moved = false;
+      if (!gallery.zoomed) return;
+      drag = { id: event.pointerId, x: event.clientX, y: event.clientY, panX: gallery.panX, panY: gallery.panY };
+      zoomButton.setPointerCapture(event.pointerId);
+    });
+    zoomButton.addEventListener('pointermove', (event) => {
+      if (drag?.id !== event.pointerId || !gallery.zoomed) return;
+      const dx = event.clientX - drag.x;
+      const dy = event.clientY - drag.y;
+      if (!moved && Math.hypot(dx, dy) < 5) return;
+      moved = true;
+      zoomButton.classList.add('bym-gallery-dragging');
+      moveGalleryImage(gallery, drag.panX + dx, drag.panY + dy);
+    });
+    zoomButton.addEventListener('lostpointercapture', () => {
+      drag = null;
+      zoomButton.classList.remove('bym-gallery-dragging');
+    });
+    zoomButton.addEventListener('click', (event) => {
+      if (event.detail && moved) return;
+      if (gallery.zoomed) {
+        setGalleryZoom(gallery, false);
+        return;
+      }
+      if (!gallery.preview.naturalWidth) return;
+      const rect = zoomButton.getBoundingClientRect();
+      const x = event.detail ? (event.clientX - rect.left - rect.width / 2) * (1 - IMAGE_ZOOM) : 0;
+      const y = event.detail ? (event.clientY - rect.top - rect.height / 2) * (1 - IMAGE_ZOOM) : 0;
+      setGalleryZoom(gallery, true, x, y);
+      revealGallery(gallery);
+    });
+  }
+
   function selectGalleryImage(gallery, index) {
     const total = gallery.items.length;
     index = (index + total) % total;
@@ -6287,9 +6436,10 @@ html.bym-lightbox-lock { overflow: hidden !important; }
     gallery.index = index;
 
     const { image, original } = gallery.items[index];
+    setGalleryZoom(gallery, false);
     gallery.preview.alt = image.alt;
     gallery.preview.src = original;
-    gallery.open.setAttribute('aria-label', `放大第 ${index + 1} 张图片`);
+    gallery.zoomButton.setAttribute('aria-label', `缩放第 ${index + 1} 张图片`);
     gallery.count.textContent = `${index + 1} / ${total}`;
 
     const button = gallery.buttons[index];
@@ -6309,19 +6459,19 @@ html.bym-lightbox-lock { overflow: hidden !important; }
 
     const stage = document.createElement('div');
     stage.className = 'bym-gallery-stage';
-    const open = document.createElement('button');
-    open.type = 'button';
-    open.className = 'bym-gallery-open';
-    open.title = '放大当前图片';
+    const zoomButton = document.createElement('button');
+    zoomButton.type = 'button';
+    zoomButton.className = 'bym-gallery-open';
     const preview = document.createElement('img');
     preview.decoding = 'async';
-    open.appendChild(preview);
+    preview.draggable = false;
+    zoomButton.appendChild(preview);
     const count = document.createElement('span');
     count.className = 'bym-gallery-count';
     count.setAttribute('role', 'status');
     const previous = makeImageViewerButton('bym-gallery-arrow bym-gallery-prev', '上一张', 'M15 5l-7 7 7 7');
     const next = makeImageViewerButton('bym-gallery-arrow bym-gallery-next', '下一张', 'M9 5l7 7-7 7');
-    stage.append(open, count, previous, next);
+    stage.append(zoomButton, count, previous, next);
 
     const strip = document.createElement('div');
     strip.className = 'bym-gallery-thumbs';
@@ -6343,17 +6493,24 @@ html.bym-lightbox-lock { overflow: hidden !important; }
     element.append(stage, strip);
 
     const sources = gallerySourceNodes(items, group);
-    const gallery = { element, items, sources, open, preview, count, strip, buttons, index: -1 };
+    const gallery = { element, items, sources, zoomButton, preview, count, strip, buttons,
+      index: -1, zoomed: false, panX: 0, panY: 0 };
     previous.addEventListener('click', () => selectGalleryImage(gallery, gallery.index - 1));
     next.addEventListener('click', () => selectGalleryImage(gallery, gallery.index + 1));
     buttons.forEach((button, index) => button.addEventListener('click', () => selectGalleryImage(gallery, index)));
-    open.addEventListener('click', () => openLightbox(gallery.items[gallery.index].image, open));
+    bindGalleryZoom(gallery);
     preview.addEventListener('error', () => {
       const { thumbnail } = gallery.items[gallery.index];
       if (preview.src !== thumbnail) preview.src = thumbnail;
     });
     element.addEventListener('keydown', (event) => {
       if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+      if (event.key === 'Escape' && gallery.zoomed) {
+        event.preventDefault();
+        event.stopPropagation();
+        setGalleryZoom(gallery, false);
+        return;
+      }
       if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
       event.preventDefault();
       event.stopPropagation();
@@ -6412,7 +6569,6 @@ html.bym-lightbox-lock { overflow: hidden !important; }
   let lightboxReturn = null;
   let lightboxClosing = false;
   // 灯箱内点击放大：以点击位置为中心缩放，放大后可以拖动查看
-  const LIGHTBOX_ZOOM = 2.2;
   let lightboxZoom = 1;
   let lightboxPanX = 0;
   let lightboxPanY = 0;
@@ -6527,7 +6683,7 @@ html.bym-lightbox-lock { overflow: hidden !important; }
     if (!rect.width || !rect.height) return;
     const px = Math.min(Math.max(clientX - rect.left, 0), rect.width);
     const py = Math.min(Math.max(clientY - rect.top, 0), rect.height);
-    lightboxZoom = LIGHTBOX_ZOOM;
+    lightboxZoom = IMAGE_ZOOM;
     lightboxPanX = px * (1 - lightboxZoom);
     lightboxPanY = py * (1 - lightboxZoom);
     clampLightboxPan();
@@ -6777,7 +6933,7 @@ html.bym-lightbox-lock { overflow: hidden !important; }
     });
   }
 
-  function openLightbox(img, trigger = img) {
+  function openLightbox(img) {
     if (lightboxClosing) return;
     const group = imageGroup(img);
     if (!group) return;
@@ -6786,11 +6942,11 @@ html.bym-lightbox-lock { overflow: hidden !important; }
     );
     if (!items.length) return;
 
-    const thumbRect = trigger.getBoundingClientRect();
+    const thumbRect = img.getBoundingClientRect();
     ensureLightbox();
     lightboxItems = items;
     lightboxIndex = Math.max(0, items.indexOf(img));
-    lightboxReturn = trigger;
+    lightboxReturn = img;
     lightboxEl.classList.toggle('bym-lb-single', items.length <= 1);
     lightboxImg.classList.remove('bym-lb-from-thumb', 'bym-lb-to-thumb', 'bym-lb-pop');
     lightboxImg.classList.add('bym-lb-loading');
@@ -6974,8 +7130,10 @@ html.bym-lightbox-lock { overflow: hidden !important; }
   window.addEventListener('resize', updateBottomBarFlow);
   window.addEventListener('resize', scheduleFloorTopUpdate);
   window.addEventListener('resize', scheduleDialogDecorate);
+  window.addEventListener('resize', () => articleGalleries.forEach(clampGalleryPan));
   // 捕获阶段接管图片点击：阻止站点 / 外层链接新开标签页
   document.addEventListener('click', onArticleImageClick, true);
+  document.addEventListener('click', onQuickReplyClick, true);
   document.addEventListener('load', (event) => {
     const img = event.target;
     if (isModern() && img.tagName === 'IMG' && !img.closest('.bym-gallery, #bym-lightbox') && imageGroup(img)) {

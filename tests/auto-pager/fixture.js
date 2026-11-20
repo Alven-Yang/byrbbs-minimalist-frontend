@@ -91,10 +91,29 @@ async function checkImageGallery() {
     thumbnails[0].getAttribute('aria-current') === 'true');
 
   thumbnails[1].click();
-  gallery.querySelector('.bym-gallery-open').click();
-  check('点大图进入同一组的当前灯箱图片', document.querySelector('#bym-lightbox .bym-lb-count').textContent === '2 / 3');
-  document.querySelector('#bym-lightbox .bym-lb-close').click();
-  await until(() => !document.querySelector('#bym-lightbox.bym-lightbox-open'));
+  await until(() => image.complete && image.naturalWidth > 0);
+  const zoom = gallery.querySelector('.bym-gallery-open');
+  zoom.click();
+  check('点大图原地放大并留在当前画廊', zoom.getAttribute('aria-pressed') === 'true' &&
+    image.style.transform.includes('scale(2.2)') && counter.textContent === '2 / 3' &&
+    !document.querySelector('#bym-lightbox.bym-lightbox-open'));
+  zoom.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+  check('Escape 还原画廊里的大图', zoom.getAttribute('aria-pressed') === 'false' && !image.style.transform);
+
+  const reply = document.querySelector('#bym-reply');
+  const composer = document.querySelector('.a-comment');
+  const draft = composer.querySelector('textarea');
+  const toolbar = document.querySelector('.t-pre-bottom');
+  check('默认收起回复并让分页工具栏回到帖尾', !reply.hidden && reply.getAttribute('aria-expanded') === 'false' &&
+    getComputedStyle(composer).display === 'none' && getComputedStyle(toolbar).position === 'static');
+  reply.click();
+  check('展开快捷回复时给底栏留出空间', reply.getAttribute('aria-expanded') === 'true' &&
+    document.activeElement === draft && stage.offsetHeight < height);
+  draft.value = '尚未发送的内容';
+  reply.click();
+  document.querySelector('#a_reply').click();
+  check('站点快捷回复入口保留刚才的输入', document.activeElement === draft && draft.value === '尚未发送的内容');
+  reply.click();
 
   const toggle = document.querySelector('#bym-toggle');
   toggle.click();
