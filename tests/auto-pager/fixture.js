@@ -59,6 +59,57 @@ async function paused(paused) {
   if ((button.getAttribute('aria-pressed') === 'false') !== paused) button.click();
   await sleep(50);
 }
+
+async function checkImageGallery() {
+  await navigate('/article/A/101?case=gallery');
+  const gallery = document.querySelector('#body .bym-gallery');
+  const counter = gallery.querySelector('.bym-gallery-count');
+  const image = gallery.querySelector('.bym-gallery-open img');
+  const thumbnails = gallery.querySelectorAll('.bym-gallery-thumb');
+  const floor = gallery.closest('.a-wrap');
+  const originals = [...floor.querySelectorAll('[data-gallery-photo]')];
+  check('多图楼层只显示一张大图，单图楼层不创建画廊', thumbnails.length === 3 &&
+    counter.textContent === '1 / 3' && originals.every((photo) => photo.getClientRects().length === 0) &&
+    !floor.nextElementSibling.querySelector('.bym-gallery') &&
+    floor.nextElementSibling.querySelector('[data-gallery-photo]').getClientRects().length > 0);
+  check('大图加载原始附件并保留原帖图注和表情', image.src.endsWith('/att/fixture/1/1') &&
+    thumbnails[0].querySelector('img').src.endsWith('?thumb') &&
+    floor.querySelector('figcaption').getClientRects().length > 0 &&
+    floor.querySelector('img.bym-emoji-img').getClientRects().length > 0);
+
+  const originalY = scrollY;
+  const stage = gallery.querySelector('.bym-gallery-stage');
+  const height = stage.offsetHeight;
+  gallery.querySelector('.bym-gallery-next').click();
+  check('左右切图只切换大图和进度，不改变页面位置', counter.textContent === '2 / 3' &&
+    image.src.endsWith('/att/fixture/1/2') && stage.offsetHeight === height && scrollY === originalY);
+  thumbnails[2].click();
+  check('缩略图可直接切换并标记当前位置', counter.textContent === '3 / 3' &&
+    thumbnails[2].getAttribute('aria-current') === 'true');
+  thumbnails[2].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+  check('方向键可以循环切换', counter.textContent === '1 / 3' &&
+    thumbnails[0].getAttribute('aria-current') === 'true');
+
+  thumbnails[1].click();
+  gallery.querySelector('.bym-gallery-open').click();
+  check('点大图进入同一组的当前灯箱图片', document.querySelector('#bym-lightbox .bym-lb-count').textContent === '2 / 3');
+  document.querySelector('#bym-lightbox .bym-lb-close').click();
+  await until(() => !document.querySelector('#bym-lightbox.bym-lightbox-open'));
+
+  const toggle = document.querySelector('#bym-toggle');
+  toggle.click();
+  check('切回经典版时恢复原有图片、附件链接和换行', !document.querySelector('.bym-gallery') &&
+    !document.querySelector('.bym-gallery-source') && originals.every((photo) => photo.getClientRects().length > 0) &&
+    originals[0].parentElement.getAttribute('href') === '/att/fixture/1/1');
+  toggle.click();
+  await paused(false);
+  nearBottom();
+  await until(() => floors() === 20 && document.querySelectorAll('.bym-gallery').length === 2);
+  check('自动翻页追加的楼层也创建独立画廊',
+    document.querySelector('[data-bym-page="2"]').nextElementSibling.querySelector('.bym-gallery-count').textContent === '1 / 3');
+  await paused(true);
+}
+
 async function run() {
   await render(); await until(() => !!document.querySelector('#bym-pager') && rows() === 31);
   if (reloadCase) {
@@ -161,6 +212,7 @@ async function run() {
   document.querySelector('#bym-toggle').click(); await sleep(80);
   check('经典模式隐藏翻页控件', document.querySelector('#bym-pager').hidden);
   document.querySelector('#bym-toggle').click();
+  await checkImageGallery();
   await navigate('/board/A?case=reload');
   window.scrollTo(0, 800); await sleep(650);
   check('刷新前列表已滚动', scrollY > 500);

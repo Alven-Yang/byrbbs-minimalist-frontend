@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         北邮人论坛 · 简约版
 // @namespace    https://bbs.byr.cn/
-// @version      0.8.1
+// @version      0.8.2
 // @description  为北邮人论坛首页、分区目录、帖子列表与详情页提供响应式简约布局，支持固定分区侧栏、深色模式、返回位置恢复与自动无缝翻页。
 // @author       Hermi2024
 // @match        https://bbs.byr.cn/*
@@ -520,6 +520,7 @@
     if (!articleActive) {
       restoreComposer();
       closeLightbox();
+      articleGalleries.forEach(removeImageGallery);
       updateFloorTopButton();
       body.classList.remove('bym-bottom-flow');
       if (floatbar) floatbar.classList.remove('bym-visible');
@@ -3729,6 +3730,128 @@ body.bym-is-board.bym-browse-on .board-list tr.top td.title_9 > a:first-child::b
 }
 `;
 
+  const CSS_GALLERY = String.raw`
+/* ---------- 帖子图片画廊 ---------- */
+body.bym-on .bym-gallery-source { display: none !important; }
+body.bym-on .bym-gallery {
+  display: grid;
+  gap: 6px;
+  max-width: 100%;
+  min-width: 0;
+  margin: 8px 0 12px;
+  --bym-gallery-surface: #eef2f7;
+  --bym-gallery-selected: #2165ce;
+}
+html.bym-dark body.bym-on .bym-gallery {
+  --bym-gallery-surface: #10161f;
+  --bym-gallery-selected: #8ab9ff;
+}
+body.bym-on .bym-gallery-stage {
+  position: relative;
+  height: clamp(180px, 49vh, 430px);
+  overflow: hidden;
+  border: 1px solid var(--bym-border);
+  border-radius: 12px;
+  background: var(--bym-gallery-surface);
+}
+body.bym-on .bym-gallery button {
+  display: grid;
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+  place-items: center;
+  box-sizing: border-box;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+}
+body.bym-on .bym-gallery button:focus-visible {
+  outline: 2px solid var(--bym-gallery-selected);
+  outline-offset: -3px;
+}
+body.bym-on .bym-gallery .bym-gallery-open {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  cursor: zoom-in;
+}
+body.bym-on .bym-gallery .bym-gallery-open img,
+body.bym-on .bym-gallery .bym-gallery-thumb img {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: 0;
+}
+body.bym-on .bym-gallery .bym-gallery-open img { object-fit: contain; }
+body.bym-on .bym-gallery-count,
+body.bym-on .bym-gallery .bym-gallery-arrow {
+  position: absolute;
+  border: 1px solid rgba(255, 255, 255, .34);
+  color: #fff;
+  background: rgba(20, 27, 38, .78);
+}
+body.bym-on .bym-gallery-count {
+  top: 10px;
+  right: 10px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 12px;
+  line-height: 1.55;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+body.bym-on .bym-gallery .bym-gallery-arrow {
+  top: 50%;
+  width: 36px;
+  height: 36px;
+  transform: translateY(-50%);
+  border-radius: 50%;
+}
+body.bym-on .bym-gallery .bym-gallery-arrow:hover { background: #151d2b; }
+body.bym-on .bym-gallery-arrow svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+body.bym-on .bym-gallery-prev { left: 10px; }
+body.bym-on .bym-gallery-next { right: 10px; }
+body.bym-on .bym-gallery-thumbs {
+  display: flex;
+  gap: 6px;
+  min-width: 0;
+  padding: 2px 0;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+}
+body.bym-on .bym-gallery .bym-gallery-thumb {
+  flex: 0 0 clamp(46px, 8vw, 64px);
+  aspect-ratio: 1.2;
+  min-width: 0;
+  overflow: hidden;
+  border: 2px solid transparent;
+  border-radius: 7px;
+  background: var(--bym-gallery-surface);
+  opacity: .75;
+}
+body.bym-on .bym-gallery .bym-gallery-thumb img { object-fit: cover; }
+body.bym-on .bym-gallery .bym-gallery-thumb:hover,
+body.bym-on .bym-gallery .bym-gallery-thumb[aria-current="true"] { opacity: 1; }
+body.bym-on .bym-gallery .bym-gallery-thumb[aria-current="true"] {
+  border-color: var(--bym-gallery-selected);
+}
+@media (max-width: 560px) {
+  body.bym-on .bym-gallery-stage { height: clamp(152px, 41vh, 320px); }
+  body.bym-on .bym-gallery-prev { left: 6px; }
+  body.bym-on .bym-gallery-next { right: 6px; }
+}
+`;
+
   const CSS_LIGHTBOX = String.raw`
 /* ---------- 图片灯箱：页内浮动预览，多图可翻页 ---------- */
 #bym-lightbox {
@@ -3904,6 +4027,7 @@ html.bym-lightbox-lock { overflow: hidden !important; }
     CSS_DOCK,
     CSS_FLOATBAR,
     CSS_DIALOG,
+    CSS_GALLERY,
     CSS_LIGHTBOX,
     CSS_DARK,
   ].join('\n');
@@ -3912,7 +4036,7 @@ html.bym-lightbox-lock { overflow: hidden !important; }
     if (document.getElementById('bym-style')) return;
     const el = document.createElement('style');
     el.id = 'bym-style';
-    el.dataset.version = '0.8.1';
+    el.dataset.version = '0.8.2';
     el.textContent = CSS + BROWSE_CSS;
     (document.head || document.documentElement).appendChild(el);
   }
@@ -5735,6 +5859,7 @@ html.bym-lightbox-lock { overflow: hidden !important; }
     decorateSearchLabels();
     fixOnlyIdLinks(document.querySelector('#body'));
     decorateNiceReplies();
+    syncImageGalleries();
 
     mountComposer();
     syncFloatbar();
@@ -6110,6 +6235,168 @@ html.bym-lightbox-lock { overflow: hidden !important; }
     closeEmojiPanel(comment);
   }
 
+  /* 正文和每条精彩回复分别组织图片，画廊和灯箱使用同一组原始节点。 */
+  const articleGalleries = new Map();
+
+  function isGalleryGap(node) {
+    return node.nodeName === 'BR' || node.nodeType === Node.COMMENT_NODE ||
+      (node.nodeType === Node.TEXT_NODE && !node.textContent.trim());
+  }
+
+  function galleryImageSource(img, group) {
+    let source = img;
+    for (let parent = source.parentElement; parent && parent !== group; parent = source.parentElement) {
+      if (parent.matches('.a-content-wrap') || !parent.matches('a, span, p, div, figure, center, picture')) break;
+      // 只收起纯图片包裹，图注和混排文字仍留在原位。
+      const imageOnly = Array.from(parent.childNodes).every((node) =>
+        node === source || isGalleryGap(node) || (parent.tagName === 'PICTURE' && node.nodeName === 'SOURCE')
+      );
+      if (!imageOnly) break;
+      source = parent;
+    }
+    return source;
+  }
+
+  function gallerySourceNodes(items, group) {
+    const sources = new Set(items.map(({ image }) => galleryImageSource(image, group)));
+    const hidden = new Set(sources);
+    sources.forEach((source) => {
+      const breaks = [];
+      let next = source.nextSibling;
+      while (next && isGalleryGap(next)) {
+        if (next.nodeName === 'BR') breaks.push(next);
+        next = next.nextSibling;
+      }
+      // 图片之间的空行和末尾的空行可以收起，后面还有正文时保留一个分隔。
+      breaks.slice(next && !sources.has(next) ? 1 : 0).forEach((line) => hidden.add(line));
+    });
+    return hidden;
+  }
+
+  function removeImageGallery(gallery, group) {
+    gallery.element.remove();
+    gallery.sources.forEach((source) => source.classList.remove('bym-gallery-source'));
+    articleGalleries.delete(group);
+  }
+
+  function selectGalleryImage(gallery, index) {
+    const total = gallery.items.length;
+    index = (index + total) % total;
+    if (index === gallery.index) return;
+    gallery.buttons[gallery.index]?.removeAttribute('aria-current');
+    gallery.index = index;
+
+    const { image, original } = gallery.items[index];
+    gallery.preview.alt = image.alt;
+    gallery.preview.src = original;
+    gallery.open.setAttribute('aria-label', `放大第 ${index + 1} 张图片`);
+    gallery.count.textContent = `${index + 1} / ${total}`;
+
+    const button = gallery.buttons[index];
+    button.setAttribute('aria-current', 'true');
+    const visible = gallery.strip.getBoundingClientRect();
+    const thumb = button.getBoundingClientRect();
+    // 只滚动缩略图栏，切图时外层帖子不移动。
+    if (thumb.left < visible.left) gallery.strip.scrollLeft -= visible.left - thumb.left;
+    if (thumb.right > visible.right) gallery.strip.scrollLeft += thumb.right - visible.right;
+  }
+
+  function mountImageGallery(group, items, selected) {
+    const element = document.createElement('div');
+    element.className = 'bym-gallery';
+    element.setAttribute('role', 'group');
+    element.setAttribute('aria-label', '帖子图片画廊');
+
+    const stage = document.createElement('div');
+    stage.className = 'bym-gallery-stage';
+    const open = document.createElement('button');
+    open.type = 'button';
+    open.className = 'bym-gallery-open';
+    open.title = '放大当前图片';
+    const preview = document.createElement('img');
+    preview.decoding = 'async';
+    open.appendChild(preview);
+    const count = document.createElement('span');
+    count.className = 'bym-gallery-count';
+    count.setAttribute('role', 'status');
+    const previous = makeImageViewerButton('bym-gallery-arrow bym-gallery-prev', '上一张', 'M15 5l-7 7 7 7');
+    const next = makeImageViewerButton('bym-gallery-arrow bym-gallery-next', '下一张', 'M9 5l7 7-7 7');
+    stage.append(open, count, previous, next);
+
+    const strip = document.createElement('div');
+    strip.className = 'bym-gallery-thumbs';
+    const buttons = items.map(({ image, thumbnail }, index) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'bym-gallery-thumb';
+      button.setAttribute('aria-label', `查看第 ${index + 1} 张图片`);
+      button.title = lightboxCaptionText(image) || `第 ${index + 1} 张`;
+      const thumb = document.createElement('img');
+      thumb.alt = '';
+      thumb.loading = 'lazy';
+      thumb.decoding = 'async';
+      thumb.src = thumbnail;
+      button.appendChild(thumb);
+      return button;
+    });
+    strip.append(...buttons);
+    element.append(stage, strip);
+
+    const sources = gallerySourceNodes(items, group);
+    const gallery = { element, items, sources, open, preview, count, strip, buttons, index: -1 };
+    previous.addEventListener('click', () => selectGalleryImage(gallery, gallery.index - 1));
+    next.addEventListener('click', () => selectGalleryImage(gallery, gallery.index + 1));
+    buttons.forEach((button, index) => button.addEventListener('click', () => selectGalleryImage(gallery, index)));
+    open.addEventListener('click', () => openLightbox(gallery.items[gallery.index].image, open));
+    preview.addEventListener('error', () => {
+      const { thumbnail } = gallery.items[gallery.index];
+      if (preview.src !== thumbnail) preview.src = thumbnail;
+    });
+    element.addEventListener('keydown', (event) => {
+      if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+      if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+      event.preventDefault();
+      event.stopPropagation();
+      selectGalleryImage(gallery, gallery.index + (event.key === 'ArrowLeft' ? -1 : 1));
+    });
+
+    const firstImage = items[0].image;
+    const content = firstImage.closest('.a-content-wrap');
+    const container = group.contains(content) ? content : group;
+    let anchor = firstImage;
+    while (anchor.parentElement !== container) anchor = anchor.parentElement;
+    container.insertBefore(element, anchor);
+    sources.forEach((source) => source.classList.add('bym-gallery-source'));
+    articleGalleries.set(group, gallery);
+    selectGalleryImage(gallery, Math.max(0, items.findIndex(({ image }) => image === selected)));
+  }
+
+  function syncImageGalleries() {
+    const groups = new Map();
+    document.querySelectorAll('#body :is(.a-content, .a-nice-comment-content) img').forEach((image) => {
+      if (!lightboxEligible(image)) return;
+      const group = imageGroup(image);
+      if (!groups.has(group)) groups.set(group, []);
+      groups.get(group).push({ image, thumbnail: image.currentSrc || image.src, original: lightboxSrc(image) });
+    });
+    articleGalleries.forEach((gallery, group) => {
+      if ((groups.get(group)?.length || 0) < 2) removeImageGallery(gallery, group);
+    });
+    groups.forEach((items, group) => {
+      if (items.length < 2) return;
+      const gallery = articleGalleries.get(group);
+      const unchanged = gallery?.element.isConnected && gallery.items.length === items.length &&
+        items.every(({ image, thumbnail, original }, index) => {
+          const previous = gallery.items[index];
+          return image === previous.image && thumbnail === previous.thumbnail && original === previous.original;
+        });
+      if (unchanged) return;
+      const selected = gallery?.items[gallery.index].image;
+      if (gallery) removeImageGallery(gallery, group);
+      mountImageGallery(group, items, selected);
+    });
+  }
+
   /* 图片灯箱：正文 / 精彩回复里的图片点击后在页内浮层预览，多图可翻页。
      交互参照 Fancybox 的缩略图放大 / 说明文字 / 上下张切换，但不引入
      jQuery + Fancybox（约 170KB），只保留和帖子页相关的部分。 */
@@ -6137,7 +6424,7 @@ html.bym-lightbox-lock { overflow: hidden !important; }
 
   // 只接管正文和精彩回复里的图片；头像、表情、站内图标都跳过
   function lightboxEligible(img) {
-    if (!img || img.tagName !== 'IMG' || img.closest('#bym-lightbox')) return false;
+    if (!img || img.tagName !== 'IMG' || img.closest('#bym-lightbox, .bym-gallery')) return false;
     if (!imageGroup(img)) return false;
     if (img.closest('.a-u-img, .a-nice-comment-face, .a-head, .a-bottom, .a-left, .a-comment, .bym-embed')) {
       return false;
@@ -6153,21 +6440,20 @@ html.bym-lightbox-lock { overflow: hidden !important; }
     if (img.naturalWidth && img.naturalHeight && img.naturalWidth <= 32 && img.naturalHeight <= 32) {
       return false;
     }
-    const src = img.getAttribute('src') || '';
+    const src = img.currentSrc || img.getAttribute('src') || '';
     return !!src && !/^data:/i.test(src);
   }
 
   // 图片外面有时包着指向原图 / 大图的链接，优先用链接目标
   function lightboxSrc(img) {
     const anchor = img.closest('a[href]');
-    const href = anchor && anchor.getAttribute('href');
-    if (
-      href &&
-      !/^javascript:/i.test(href) &&
-      /\.(?:jpe?g|png|gif|webp|bmp|avif|svg)(?:[?#].*)?$/i.test(href)
-    ) {
+    if (anchor) {
       try {
-        return new URL(href, location.href).href;
+        const url = new URL(anchor.href, location.href);
+        const attachment = url.origin === location.origin && url.pathname.startsWith('/att/');
+        if (/^https?:$/.test(url.protocol) && (attachment || /\.(?:jpe?g|png|gif|webp|bmp|avif|svg)$/i.test(url.pathname))) {
+          return url.href;
+        }
       } catch (e) {
         /* 继续用图片自身的地址 */
       }
@@ -6308,10 +6594,10 @@ html.bym-lightbox-lock { overflow: hidden !important; }
     endLightboxPointer(event, false);
   }
 
-  function makeLightboxButton(className, label, pathData) {
+  function makeImageViewerButton(className, label, pathData) {
     const btn = document.createElement('button');
     btn.type = 'button';
-    btn.className = 'bym-lb-btn ' + className;
+    btn.className = className;
     btn.setAttribute('aria-label', label);
     btn.title = label;
     btn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + pathData + '"></path></svg>';
@@ -6343,13 +6629,13 @@ html.bym-lightbox-lock { overflow: hidden !important; }
 
     lightboxCount = document.createElement('div');
     lightboxCount.className = 'bym-lb-count';
-    lightboxClose = makeLightboxButton('bym-lb-close', '关闭', 'M6 6l12 12M18 6L6 18');
+    lightboxClose = makeImageViewerButton('bym-lb-btn bym-lb-close', '关闭', 'M6 6l12 12M18 6L6 18');
     const top = document.createElement('div');
     top.className = 'bym-lb-top';
     top.append(lightboxCount, lightboxClose);
 
-    lightboxPrev = makeLightboxButton('bym-lb-prev', '上一张', 'M15 5l-7 7 7 7');
-    lightboxNext = makeLightboxButton('bym-lb-next', '下一张', 'M9 5l7 7-7 7');
+    lightboxPrev = makeImageViewerButton('bym-lb-btn bym-lb-prev', '上一张', 'M15 5l-7 7 7 7');
+    lightboxNext = makeImageViewerButton('bym-lb-btn bym-lb-next', '下一张', 'M9 5l7 7-7 7');
     lightboxCaption = document.createElement('div');
     lightboxCaption.className = 'bym-lb-caption';
     lightboxCaption.hidden = true;
@@ -6491,7 +6777,7 @@ html.bym-lightbox-lock { overflow: hidden !important; }
     });
   }
 
-  function openLightbox(img) {
+  function openLightbox(img, trigger = img) {
     if (lightboxClosing) return;
     const group = imageGroup(img);
     if (!group) return;
@@ -6500,11 +6786,11 @@ html.bym-lightbox-lock { overflow: hidden !important; }
     );
     if (!items.length) return;
 
-    const thumbRect = img.getBoundingClientRect();
+    const thumbRect = trigger.getBoundingClientRect();
     ensureLightbox();
     lightboxItems = items;
     lightboxIndex = Math.max(0, items.indexOf(img));
-    lightboxReturn = img;
+    lightboxReturn = trigger;
     lightboxEl.classList.toggle('bym-lb-single', items.length <= 1);
     lightboxImg.classList.remove('bym-lb-from-thumb', 'bym-lb-to-thumb', 'bym-lb-pop');
     lightboxImg.classList.add('bym-lb-loading');
@@ -6690,6 +6976,12 @@ html.bym-lightbox-lock { overflow: hidden !important; }
   window.addEventListener('resize', scheduleDialogDecorate);
   // 捕获阶段接管图片点击：阻止站点 / 外层链接新开标签页
   document.addEventListener('click', onArticleImageClick, true);
+  document.addEventListener('load', (event) => {
+    const img = event.target;
+    if (isModern() && img.tagName === 'IMG' && !img.closest('.bym-gallery, #bym-lightbox') && imageGroup(img)) {
+      scheduleDecorate();
+    }
+  }, true);
   document.addEventListener('click', onDocumentClickOutsideEmoji, true);
   document.addEventListener('click', onEmbedClick, false);
 

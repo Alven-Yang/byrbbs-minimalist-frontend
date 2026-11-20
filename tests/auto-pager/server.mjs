@@ -5,6 +5,16 @@ import { fileURLToPath } from 'node:url';
 const script = fileURLToPath(new URL('../../byrbbs-minimalist-frontend.user.js', import.meta.url));
 const attempts = new Map();
 const esc = (value) => String(value).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+function galleryContent(floor) {
+  const single = '<img data-gallery-photo src="/att/fixture/1/3" alt="单图">';
+  if (floor % 10 === 1) return single;
+  if (floor % 10 !== 0) return '';
+  return '<br><a href="/att/fixture/1/1"><img data-gallery-photo src="/att/fixture/1/1?thumb" alt="第一张"></a><br><br>' +
+    '<a href="/att/fixture/1/2"><img data-gallery-photo src="/att/fixture/1/2" alt="第二张"></a><br>' +
+    '<figure><img data-gallery-photo src="/att/fixture/1/3" alt="第三张"><figcaption>原帖图注</figcaption></figure>' +
+    '<img src="/att/fixture/1/3" alt="ema2">';
+}
+
 function content(url) {
   const article = url.pathname.startsWith('/article/');
   const page = Number(url.searchParams.get('p')) || 1;
@@ -18,7 +28,8 @@ function content(url) {
   }).join('');
   const floors = Array.from({ length: 10 }, (_, i) => {
     const n = (page - 1) * 10 + i;
-    return `<div class="a-wrap"><table class="article"><tbody><tr class="a-head"><td class="a-left"><span class="a-u-name">demo</span></td><td><span class="a-pos">Floor ${n}</span></td></tr><tr class="a-body"><td class="a-left"><div class="a-u-uid">demo</div></td><td class="a-content"><div class="a-content-wrap">测试中文 ${n}<div style="height:220px"></div></div></td></tr><tr class="a-bottom"><td></td><td><a class="a-post" href="/article/A/post/${101 + n}">Reply</a></td></tr></tbody></table></div>`;
+    const images = url.searchParams.get('case') === 'gallery' ? galleryContent(n) : '';
+    return `<div class="a-wrap"><table class="article"><tbody><tr class="a-head"><td class="a-left"><span class="a-u-name">demo</span></td><td><span class="a-pos">Floor ${n}</span></td></tr><tr class="a-body"><td class="a-left"><div class="a-u-uid">demo</div></td><td class="a-content"><div class="a-content-wrap">测试中文 ${n}${images}<div style="height:220px"></div></div></td></tr><tr class="a-bottom"><td></td><td><a class="a-post" href="/article/A/post/${101 + n}">Reply</a></td></tr></tbody></table></div>`;
   }).join('');
   const pinned = '<tr class="top"><td class="title_9"><a href="/article/A/9000">Pinned</a></td><td>2026</td><td>demo</td><td>0</td></tr>';
   const body = article ? floors : `<table class="board-list"><thead><tr><th class="title_9">Topic</th><th class="title_10">Date</th><th class="title_12">Author</th><th class="title_11">Replies</th></tr></thead><tbody>${pinned}${rows}</tbody></table>`;
@@ -35,6 +46,11 @@ http.createServer((req, res) => {
   };
   if (url.pathname === '/subject.js') return send(fs.readFileSync(script), 'text/javascript');
   if (url.pathname === '/fixture.js') return send(fs.readFileSync(new URL('./fixture.js', import.meta.url)), 'text/javascript');
+  const photo = url.pathname.match(/^\/att\/fixture\/1\/([1-3])$/);
+  if (photo) {
+    const color = ['#336888', '#c65236', '#528656'][Number(photo[1]) - 1];
+    return send(`<svg xmlns="http://www.w3.org/2000/svg" width="480" height="320"><rect width="480" height="320" fill="${color}"/></svg>`, 'image/svg+xml');
+  }
   if (url.pathname.startsWith('/board/') || url.pathname.startsWith('/article/')) {
     // 普通 GET 只返回外壳，与真实论坛一样，只有 AJAX 请求才能拿到内容片段。
     if (req.headers['x-requested-with'] !== 'XMLHttpRequest') return send('<html><body>Forum shell</body></html>');
