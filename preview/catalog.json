@@ -1,0 +1,926 @@
+[
+  {
+    "id": "0",
+    "name": "本站站务",
+    "boards": [
+      {
+        "name": "意见与建议",
+        "path": "/board/Advice"
+      },
+      {
+        "name": "站务公告栏",
+        "path": "/board/Announce"
+      },
+      {
+        "name": "论坛使用帮助",
+        "path": "/board/BBShelp"
+      },
+      {
+        "name": "论坛数据统计及日志",
+        "path": "/section/BBSLOG"
+      },
+      {
+        "name": "竞猜",
+        "path": "/board/Bet"
+      },
+      {
+        "name": "版主事务区",
+        "path": "/section/BM_Affair"
+      },
+      {
+        "name": "版主及助理招聘区",
+        "path": "/board/BM_Market"
+      },
+      {
+        "name": "版面事务区",
+        "path": "/section/Board"
+      },
+      {
+        "name": "北邮人论坛十二周年站庆",
+        "path": "/board/BYR12"
+      },
+      {
+        "name": "北邮人团队",
+        "path": "/section/BYR_Team"
+      },
+      {
+        "name": "cnbbs转信",
+        "path": "/section/cn_bbs"
+      },
+      {
+        "name": "业务合作与广告投放",
+        "path": "/board/Cooperation"
+      },
+      {
+        "name": "投诉与仲裁",
+        "path": "/section/Court"
+      },
+      {
+        "name": "论坛委员会",
+        "path": "/board/ForumCommittee"
+      },
+      {
+        "name": "账号事务管理",
+        "path": "/board/ID"
+      },
+      {
+        "name": "更新与改进",
+        "path": "/board/Progress"
+      },
+      {
+        "name": "积分",
+        "path": "/board/Score"
+      },
+      {
+        "name": "本站系统讨论区",
+        "path": "/board/sysop"
+      },
+      {
+        "name": "新手测试区",
+        "path": "/board/test"
+      }
+    ]
+  },
+  {
+    "id": "1",
+    "name": "北邮校园",
+    "boards": [
+      {
+        "name": "北邮教务处",
+        "path": "/board/AcademicAffairs"
+      },
+      {
+        "name": "北邮欢迎你",
+        "path": "/board/AimBUPT"
+      },
+      {
+        "name": "社团组织",
+        "path": "/section/Association"
+      },
+      {
+        "name": "北邮生活",
+        "path": "/board/BUPT"
+      },
+      {
+        "name": "校园网",
+        "path": "/board/BUPTNet"
+      },
+      {
+        "name": "北邮邮局",
+        "path": "/board/BUPTPost"
+      },
+      {
+        "name": "北邮人公告栏",
+        "path": "/board/BYR_Bulletin"
+      },
+      {
+        "name": "北邮校园卡",
+        "path": "/board/CampusCard"
+      },
+      {
+        "name": "悼念周先生",
+        "path": "/board/daonian"
+      },
+      {
+        "name": "北邮关注",
+        "path": "/board/Focus"
+      },
+      {
+        "name": "毕业生之家",
+        "path": "/board/Graduation"
+      },
+      {
+        "name": "北邮后勤处",
+        "path": "/board/Houqin"
+      },
+      {
+        "name": "本科教务新系统",
+        "path": "/board/jiaowu_newSystem"
+      },
+      {
+        "name": "北邮基建处",
+        "path": "/board/JiJianChu"
+      },
+      {
+        "name": "军训快报",
+        "path": "/board/Junxun"
+      },
+      {
+        "name": "北邮图书馆",
+        "path": "/board/Library"
+      },
+      {
+        "name": "北邮记忆",
+        "path": "/board/MyBUPT"
+      },
+      {
+        "name": "热点活动",
+        "path": "/board/Recommend"
+      },
+      {
+        "name": "院系校区",
+        "path": "/section/School"
+      },
+      {
+        "name": "北邮保卫处",
+        "path": "/board/SecurityDivision"
+      },
+      {
+        "name": "助学之家",
+        "path": "/board/Selfsupport"
+      },
+      {
+        "name": "北邮学生处",
+        "path": "/board/StudentAffairs"
+      },
+      {
+        "name": "邮问有答",
+        "path": "/board/StudentQuery"
+      }
+    ]
+  },
+  {
+    "id": "2",
+    "name": "学术科技",
+    "boards": [
+      {
+        "name": "算法与程序设计竞赛",
+        "path": "/board/ACM_ICPC"
+      },
+      {
+        "name": "BBS安装管理",
+        "path": "/board/BBSMan_Dev"
+      },
+      {
+        "name": "北邮人开放平台",
+        "path": "/board/BBSOpenAPI"
+      },
+      {
+        "name": "电子电路",
+        "path": "/board/Circuit"
+      },
+      {
+        "name": "通信技术",
+        "path": "/board/Communications"
+      },
+      {
+        "name": "C/C++程序设计语言",
+        "path": "/board/CPP"
+      },
+      {
+        "name": "数据库技术",
+        "path": "/board/Database"
+      },
+      {
+        "name": ".NET程序设计",
+        "path": "/board/dotNET"
+      },
+      {
+        "name": "经济学",
+        "path": "/board/Economics"
+      },
+      {
+        "name": "嵌入式系统",
+        "path": "/board/Embedded_System"
+      },
+      {
+        "name": "Go语言",
+        "path": "/board/Golang"
+      },
+      {
+        "name": "电脑硬件与维修",
+        "path": "/board/HardWare"
+      },
+      {
+        "name": "创新实践",
+        "path": "/board/Innovation"
+      },
+      {
+        "name": "Java技术",
+        "path": "/board/Java"
+      },
+      {
+        "name": "JavaScript语言",
+        "path": "/board/JavaScript"
+      },
+      {
+        "name": "Linux操作系统",
+        "path": "/board/Linux"
+      },
+      {
+        "name": "创客与开源硬件",
+        "path": "/board/Makerclub"
+      },
+      {
+        "name": "数学建模",
+        "path": "/board/MathModel"
+      },
+      {
+        "name": "Matlab实验室",
+        "path": "/board/Matlab"
+      },
+      {
+        "name": "机器学习与数据挖掘",
+        "path": "/board/ML_DM"
+      },
+      {
+        "name": "移动互联网",
+        "path": "/board/MobileInternet"
+      },
+      {
+        "name": "智能终端开发技术",
+        "path": "/board/MobileTerminalAT"
+      },
+      {
+        "name": "笔记本电脑",
+        "path": "/board/Notebook"
+      },
+      {
+        "name": "办公软件",
+        "path": "/board/OfficeTool"
+      },
+      {
+        "name": "科研与论文",
+        "path": "/board/Paper"
+      },
+      {
+        "name": "Python",
+        "path": "/board/Python"
+      },
+      {
+        "name": "机器人",
+        "path": "/board/Robot"
+      },
+      {
+        "name": "搜索引擎",
+        "path": "/board/SearchEngine"
+      },
+      {
+        "name": "信息安全",
+        "path": "/board/Security"
+      },
+      {
+        "name": "智能车",
+        "path": "/board/Smartcar"
+      },
+      {
+        "name": "软件开发",
+        "path": "/board/SoftDesign"
+      },
+      {
+        "name": "大数据可视化",
+        "path": "/board/Visualization"
+      },
+      {
+        "name": "Windows操作系统",
+        "path": "/board/Windows"
+      },
+      {
+        "name": "WWW技术",
+        "path": "/board/WWWTechnology"
+      }
+    ]
+  },
+  {
+    "id": "3",
+    "name": "信息社会",
+    "boards": [
+      {
+        "name": "广告乐园",
+        "path": "/section/Advertise"
+      },
+      {
+        "name": "考研专版",
+        "path": "/board/AimGraduate"
+      },
+      {
+        "name": "学为人师，行为世范",
+        "path": "/board/BNU"
+      },
+      {
+        "name": "北邮互联网俱乐部",
+        "path": "/board/BUPT_Internet_Club"
+      },
+      {
+        "name": "北邮人在上海",
+        "path": "/board/BYRatSH"
+      },
+      {
+        "name": "深圳邮人家",
+        "path": "/board/BYRatSZ"
+      },
+      {
+        "name": "北邮人BT专区",
+        "path": "/section/BYRBT"
+      },
+      {
+        "name": "认证考试",
+        "path": "/board/Certification"
+      },
+      {
+        "name": "公务员",
+        "path": "/board/CivilServant"
+      },
+      {
+        "name": "管理咨询",
+        "path": "/board/Consulting"
+      },
+      {
+        "name": "创业交流",
+        "path": "/board/Entrepreneurship"
+      },
+      {
+        "name": "家庭生活",
+        "path": "/board/FamilyLife"
+      },
+      {
+        "name": "金融职场",
+        "path": "/board/Financecareer"
+      },
+      {
+        "name": "金融投资",
+        "path": "/board/Financial"
+      },
+      {
+        "name": "飞跃重洋",
+        "path": "/board/GoAbroad"
+      },
+      {
+        "name": "安居乐业",
+        "path": "/board/Home"
+      },
+      {
+        "name": "信息产业",
+        "path": "/board/IT"
+      },
+      {
+        "name": "应届求职广场",
+        "path": "/board/Job"
+      },
+      {
+        "name": "招聘信息专版",
+        "path": "/board/JobInfo"
+      },
+      {
+        "name": "跳槽就业",
+        "path": "/board/Jump"
+      },
+      {
+        "name": "网络资源",
+        "path": "/board/NetResources"
+      },
+      {
+        "name": "海外北邮人",
+        "path": "/board/Overseas"
+      },
+      {
+        "name": "兼职实习信息",
+        "path": "/board/ParttimeJob"
+      },
+      {
+        "name": "产品疯人院",
+        "path": "/board/PMatBUPT"
+      },
+      {
+        "name": "学习交流区",
+        "path": "/board/StudyShare"
+      },
+      {
+        "name": "天气预报",
+        "path": "/board/Weather"
+      },
+      {
+        "name": "职场人生",
+        "path": "/board/WorkLife"
+      }
+    ]
+  },
+  {
+    "id": "4",
+    "name": "人文艺术",
+    "boards": [
+      {
+        "name": "天文",
+        "path": "/board/Astronomy"
+      },
+      {
+        "name": "辩论",
+        "path": "/board/Debate"
+      },
+      {
+        "name": "视频制作",
+        "path": "/board/DV"
+      },
+      {
+        "name": "英语吧",
+        "path": "/board/EnglishBar"
+      },
+      {
+        "name": "奇闻异事",
+        "path": "/board/Ghost"
+      },
+      {
+        "name": "吉他",
+        "path": "/board/Guitar"
+      },
+      {
+        "name": "日语学习",
+        "path": "/board/Japanese"
+      },
+      {
+        "name": "韩流吧",
+        "path": "/board/KoreanWind"
+      },
+      {
+        "name": "音乐交流区",
+        "path": "/board/Music"
+      },
+      {
+        "name": "摄影",
+        "path": "/board/Photo"
+      },
+      {
+        "name": "诗词歌赋",
+        "path": "/board/Poetry"
+      },
+      {
+        "name": "心理健康在线",
+        "path": "/board/PsyHealthOnline"
+      },
+      {
+        "name": "曲苑杂谈",
+        "path": "/board/Quyi"
+      },
+      {
+        "name": "书屋",
+        "path": "/board/Reading"
+      },
+      {
+        "name": "科幻奇幻",
+        "path": "/board/ScienceFiction"
+      },
+      {
+        "name": "T恤文化",
+        "path": "/board/Tshirt"
+      }
+    ]
+  },
+  {
+    "id": "5",
+    "name": "生活时尚",
+    "boards": [
+      {
+        "name": "美容护肤",
+        "path": "/board/Beauty"
+      },
+      {
+        "name": "北邮愿望树",
+        "path": "/board/Blessing"
+      },
+      {
+        "name": "衣衣不舍",
+        "path": "/board/Clothing"
+      },
+      {
+        "name": "星雨星愿",
+        "path": "/board/Constellations"
+      },
+      {
+        "name": "数字生活",
+        "path": "/board/DigiLife"
+      },
+      {
+        "name": "创意生活",
+        "path": "/board/DIYLife"
+      },
+      {
+        "name": "环境保护",
+        "path": "/board/Environment"
+      },
+      {
+        "name": "情感的天空",
+        "path": "/board/Feeling"
+      },
+      {
+        "name": "秀色可餐",
+        "path": "/board/Food"
+      },
+      {
+        "name": "缘来如此",
+        "path": "/board/Friends"
+      },
+      {
+        "name": "健康保健",
+        "path": "/board/Health"
+      },
+      {
+        "name": "悄悄话",
+        "path": "/board/IWhisper"
+      },
+      {
+        "name": "失物招领与拾金不昧",
+        "path": "/board/LostandFound"
+      },
+      {
+        "name": "谈天说地",
+        "path": "/board/Talking"
+      }
+    ]
+  },
+  {
+    "id": "6",
+    "name": "休闲娱乐",
+    "boards": [
+      {
+        "name": "汽车之家",
+        "path": "/board/AutoMotor"
+      },
+      {
+        "name": "桌面游戏",
+        "path": "/board/BoardGame"
+      },
+      {
+        "name": "动漫交流区",
+        "path": "/board/Comic"
+      },
+      {
+        "name": "闪客帝国",
+        "path": "/board/Flash"
+      },
+      {
+        "name": "煮酒论剑",
+        "path": "/board/Hero"
+      },
+      {
+        "name": "笑口常开",
+        "path": "/board/Joke"
+      },
+      {
+        "name": "K歌之王",
+        "path": "/board/KaraOK"
+      },
+      {
+        "name": "杀人俱乐部",
+        "path": "/board/KillBar"
+      },
+      {
+        "name": "电影",
+        "path": "/board/Movie"
+      },
+      {
+        "name": "网络文学",
+        "path": "/board/NetLiterature"
+      },
+      {
+        "name": "北邮人投票",
+        "path": "/board/nVote"
+      },
+      {
+        "name": "宠物家园",
+        "path": "/board/Pet"
+      },
+      {
+        "name": "贴图秀",
+        "path": "/board/Picture"
+      },
+      {
+        "name": "绿色心情",
+        "path": "/board/Plant"
+      },
+      {
+        "name": "BYR在线广播",
+        "path": "/board/RadioOnline"
+      },
+      {
+        "name": "娱乐星天地",
+        "path": "/board/SuperStar"
+      },
+      {
+        "name": "海天游踪",
+        "path": "/board/Travel"
+      },
+      {
+        "name": "电视剧",
+        "path": "/board/TV"
+      },
+      {
+        "name": "视频酷",
+        "path": "/board/VideoCool"
+      }
+    ]
+  },
+  {
+    "id": "7",
+    "name": "体育健身",
+    "boards": [
+      {
+        "name": "田径",
+        "path": "/board/Athletics"
+      },
+      {
+        "name": "羽毛球",
+        "path": "/board/Badminton"
+      },
+      {
+        "name": "篮球咖啡屋",
+        "path": "/board/Basketball"
+      },
+      {
+        "name": "台球",
+        "path": "/board/Billiards"
+      },
+      {
+        "name": "棋牌",
+        "path": "/board/Chess"
+      },
+      {
+        "name": "梦想单车",
+        "path": "/board/Cycling"
+      },
+      {
+        "name": "舞蹈",
+        "path": "/board/Dancing"
+      },
+      {
+        "name": "足球吧",
+        "path": "/board/Football"
+      },
+      {
+        "name": "极速赛车",
+        "path": "/board/GSpeed"
+      },
+      {
+        "name": "健身房",
+        "path": "/board/Gymnasium"
+      },
+      {
+        "name": "武术",
+        "path": "/board/Kungfu"
+      },
+      {
+        "name": "橄榄球",
+        "path": "/board/Rugby"
+      },
+      {
+        "name": "天行毽",
+        "path": "/board/Shuttlecock"
+      },
+      {
+        "name": "滑板名堂",
+        "path": "/board/Sk8"
+      },
+      {
+        "name": "北邮刷天下",
+        "path": "/board/Skating"
+      },
+      {
+        "name": "滑雪",
+        "path": "/board/Ski_Snowboard"
+      },
+      {
+        "name": "碧水情深",
+        "path": "/board/Swim"
+      },
+      {
+        "name": "乒乓球",
+        "path": "/board/Tabletennis"
+      },
+      {
+        "name": "跆拳道",
+        "path": "/board/Taekwondo"
+      },
+      {
+        "name": "网球",
+        "path": "/board/Tennis"
+      },
+      {
+        "name": "排球",
+        "path": "/board/Volleyball"
+      }
+    ]
+  },
+  {
+    "id": "8",
+    "name": "游戏对战",
+    "boards": [
+      {
+        "name": "地下城与勇士",
+        "path": "/board/BUPTDNF"
+      },
+      {
+        "name": "反恐精英",
+        "path": "/board/CStrike"
+      },
+      {
+        "name": "暗黑破坏神",
+        "path": "/board/Diablo"
+      },
+      {
+        "name": "Dota",
+        "path": "/board/Dota"
+      },
+      {
+        "name": "足球经理",
+        "path": "/board/FootballManager"
+      },
+      {
+        "name": "炉石传说",
+        "path": "/board/Hearthstone"
+      },
+      {
+        "name": "英雄联盟",
+        "path": "/board/LOL"
+      },
+      {
+        "name": "网络游戏",
+        "path": "/board/OnlineGame"
+      },
+      {
+        "name": "守望先锋",
+        "path": "/board/OverWatch"
+      },
+      {
+        "name": "电脑游戏",
+        "path": "/board/PCGame"
+      },
+      {
+        "name": "跑跑卡丁车",
+        "path": "/board/PopKart"
+      },
+      {
+        "name": "绝地求生",
+        "path": "/board/PUBG"
+      },
+      {
+        "name": "电子游戏",
+        "path": "/board/TVGame"
+      },
+      {
+        "name": "实况足球",
+        "path": "/board/WE"
+      },
+      {
+        "name": "魔兽世界",
+        "path": "/board/WOW"
+      },
+      {
+        "name": "梦幻西游",
+        "path": "/board/Xyq"
+      }
+    ]
+  },
+  {
+    "id": "9",
+    "name": "乡亲乡爱",
+    "boards": [
+      {
+        "name": "情淮徽皖·安徽",
+        "path": "/board/Anhui"
+      },
+      {
+        "name": "粤广茶餐厅·广东",
+        "path": "/board/Cantonese"
+      },
+      {
+        "name": "巴渝人家·重庆",
+        "path": "/board/Chongqing"
+      },
+      {
+        "name": "八闽玲珑·福建",
+        "path": "/board/Fujian"
+      },
+      {
+        "name": "西凉故道·甘肃",
+        "path": "/board/Gansu"
+      },
+      {
+        "name": "桂香南疆·广西",
+        "path": "/board/Guangxi"
+      },
+      {
+        "name": "景秀黔城·贵州",
+        "path": "/board/Guizhou"
+      },
+      {
+        "name": "天涯海角·海南",
+        "path": "/board/Hainan"
+      },
+      {
+        "name": "燕赵情怀·河北",
+        "path": "/board/Hebei"
+      },
+      {
+        "name": "豫韵悠悠·河南",
+        "path": "/board/Henan"
+      },
+      {
+        "name": "楚天邮情·湖北",
+        "path": "/board/Hubei"
+      },
+      {
+        "name": "潇湘天下·湖南",
+        "path": "/board/Hunan"
+      },
+      {
+        "name": "翱翔雄鹰·内蒙古",
+        "path": "/board/InnerMongolia"
+      },
+      {
+        "name": "江淮人家·江苏",
+        "path": "/board/Jiangsu"
+      },
+      {
+        "name": "江南西道·江西",
+        "path": "/board/Jiangxi"
+      },
+      {
+        "name": "塞上江南·宁夏",
+        "path": "/board/Ningxia"
+      },
+      {
+        "name": "东北一家人·东北",
+        "path": "/board/NorthEast"
+      },
+      {
+        "name": "北京四合院·北京",
+        "path": "/board/Peking"
+      },
+      {
+        "name": "青深似海·青海",
+        "path": "/board/Qinghai"
+      },
+      {
+        "name": "三秦大地·陕西",
+        "path": "/board/Shaanxi"
+      },
+      {
+        "name": "齐鲁大地·山东",
+        "path": "/board/Shandong"
+      },
+      {
+        "name": "桐叶封晋·山西",
+        "path": "/board/Shanxi"
+      },
+      {
+        "name": "蜀山邮侠·四川",
+        "path": "/board/Sichuan"
+      },
+      {
+        "name": "九河下梢·天津",
+        "path": "/board/Tianjin"
+      },
+      {
+        "name": "天山南北·新疆",
+        "path": "/board/Xinjiang"
+      },
+      {
+        "name": "彩云之南·云南",
+        "path": "/board/Yunnan"
+      },
+      {
+        "name": "钱塘人家·浙江",
+        "path": "/board/Zhejiang"
+      }
+    ]
+  }
+]

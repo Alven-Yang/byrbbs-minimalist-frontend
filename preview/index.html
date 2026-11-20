@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>北邮人论坛 · 交互预览</title>
+  <link rel="stylesheet" href="/original.css">
+  <link rel="stylesheet" href="/widget.css">
+  <style>
+    #preview-banner { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; padding: 8px 16px; background: #eaf0f8; color: #52647e; font: 12px/1.6 sans-serif; }
+    #preview-banner a { color: #2f6fd0; }
+    #preview-status { margin-right: auto; }
+    #preview-notice { position: fixed; right: 16px; bottom: 20px; z-index: 2147483001; max-width: calc(100vw - 64px); padding: 12px 16px; border-radius: 10px; background: #243247; color: white; font: 13px/1.6 sans-serif; }
+    #preview-notice:empty { display: none; }
+  </style>
+</head>
+<body>
+  <div id="preview-banner">
+    <span id="preview-status">交互预览 · 示例数据，可直接点击分区、版面和帖子连续浏览</span>
+    <a href="/byrbbs-minimalist-frontend.user.js" target="_blank" rel="noopener">安装新版脚本</a>
+    <a href="/download/byrbbs-minimalist-frontend.user.js" download>下载脚本</a>
+    <a href="https://bbs.byr.cn/" target="_blank" rel="noopener">打开真实论坛</a>
+  </div>
+  <header id="top_head">
+    <figure id="top_logo"><a href="/default"><img src="/img/logo.gif" alt="北邮人论坛"></a></figure>
+    <div id="ban_ner">北邮人论坛</div>
+    <div id="top_menu"><ul>
+      <li><a href="/board/Cooperation">合作交流</a></li>
+      <li><a href="/board/BBShelp">论坛帮助</a></li>
+      <li><a href="/board/Advice">意见建议</a></li>
+    </ul></div>
+  </header>
+  <aside id="menu">
+    <div id="u_login"><p>欢迎 <a href="/user/query/demo">示例用户</a></p><ul>
+      <li><a href="/default">论坛首页</a></li>
+      <li><a href="/fav">我的收藏夹</a></li>
+    </ul></div>
+    <nav id="xlist"><ul><li class="folder-open"><span class="x-folder"><span class="toggler" data-preview-folder role="button" aria-label="展开或收起全部讨论区" aria-expanded="true"></span><a href="/default">全部讨论区</a></span><ul id="sections" class="x-child" style="display:block"></ul></li></ul></nav>
+    <div id="left_adv"></div>
+  </aside>
+  <section id="main"><nav id="notice" class="corner"></nav><section id="body" class="corner"></section></section>
+  <div class="clearfix"></div>
+  <footer id="bot_foot"><figure id="bot_logo"><a href="/default"><img src="/img/logo.gif" alt="北邮人论坛"></a></figure><div id="bot_info">The rest is silence.<br>powered by BYR-Team © 2009-2026.</div></footer>
+  <div id="preview-notice" role="status" aria-live="polite"></div>
+  <script src="/preview/app.js" type="module"></script>
+</body>
+</html>
